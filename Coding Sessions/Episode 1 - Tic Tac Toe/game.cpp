@@ -89,10 +89,10 @@ class Game
 {
 private:
     //* Game variables
-    Player *player;         //! Array of players
-    Board board;            //! Board object
-    int turn;               //! Current turn
-    bool game_over, winner; //! Status flags
+    Player *player; //! Array of players
+    Board board;    //! Board object
+    int turn;       //! Current turn
+    bool game_over; //! Status flags
 
     //* Check for winner
     bool checkWinner();
@@ -153,8 +153,8 @@ void clrscr()
 void holdScreen()
 {
     cout << getColorCode("Press Enter to continue...", YELLOW, true);
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');    //! ignore the invalid input
-    cin.get();                                              //! wait for user to press enter
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! ignore the invalid input
+    cin.get();                                           //! wait for user to press enter
 }
 
 //* Player class constructor
@@ -293,7 +293,6 @@ Game::Game()
 {
     this->turn = 0;          //! Initialize turn to 0
     this->game_over = false; //! Initialize game_over to false
-    this->winner = 0;        //! Initialize winner to false
 
     //? Create players
     string name1, name2, symbol1, symbol2;
@@ -343,33 +342,22 @@ bool Game::checkWinner()
     //? Check for winner
     string symbol = player[turn].getSymbol();
 
-    //? Check rows
+    //? Check rows & columns
     for (int i = 0; i < 3; i++)
+        //? Check rows
         if (board.getCell(i, 0) == symbol && board.getCell(i, 1) == symbol && board.getCell(i, 2) == symbol)
-        {
-            winner = turn; //! Set winner to current player
             return true;
-        }
 
-    //? Check columns
-    for (int i = 0; i < 3; i++)
-        if (board.getCell(0, i) == symbol && board.getCell(1, i) == symbol && board.getCell(2, i) == symbol)
-        {
-            winner = turn; //! Set winner to current player
+        //? Check columns
+        else if (board.getCell(0, i) == symbol && board.getCell(1, i) == symbol && board.getCell(2, i) == symbol)
             return true;
-        }
 
     //? Check diagonals
     if (board.getCell(0, 0) == symbol && board.getCell(1, 1) == symbol && board.getCell(2, 2) == symbol)
-    {
-        winner = turn; //! Set winner to current player
         return true;
-    }
+
     if (board.getCell(0, 2) == symbol && board.getCell(1, 1) == symbol && board.getCell(2, 0) == symbol)
-    {
-        winner = turn; //! Set winner to current player
         return true;
-    }
 
     return false;
 }
@@ -382,7 +370,7 @@ void Game::playRound()
     bool valid = false;
 
     //? Reset the board
-    board.reset();  //! Reset the board
+    board.reset(); //! Reset the board
 
     //? Start the game
     while (true)
@@ -399,39 +387,47 @@ void Game::playRound()
         //? Take input from the user & place symbol
         do
         {
-            //? Prompt user to enter cell number
-            cout << getColorCode("Enter cell number (1-9): ", GREEN);
-            cin >> index;
-
-            //? Check if the input is valid
-            if (cin.fail())
+            try
             {
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');        //! ignore the invalid input
-                cin.clear();                                                //! clear the error flag
-                cout << getColorCode("Invalid input! Try again.\n", RED);   //! display error message
-                valid = false;                                              //! set valid to false
-                continue;                                                   //! continue to the next iteration
-            }
+                //? Prompt user to enter cell number
+                cout << getColorCode("\nEnter cell number (1-9): ", GREEN);
+                cin >> index;
 
-            //? Check if the cell is valid
-            if (index < 1 || index > 9)
+                //? Check if input failed (e.g., non-integer input)
+                if (cin.fail())
+                {
+                    cin.clear();                                         //! Clear error flags
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! Discard bad input
+                    throw runtime_error("Invalid input");
+                }
+
+                //? Check if the cell is valid
+                if (index < 1 || index > 9)
+                {
+                    cout << getColorCode("Invalid cell number! Try again.\n", RED);
+                    valid = false;
+                    continue;
+                }
+
+                //? Check if the cell is already occupied
+                if (!board.placeSymbol(index, player[turn].getSymbol()))
+                {
+                    cout << getColorCode("Cell already occupied! Try again.\n", RED);
+                    valid = false;
+                    continue;
+                }
+
+                valid = true;
+            }
+            //? Catch invalid input exceptions
+            catch (const exception &e)
             {
-                cout << getColorCode("Invalid cell number! Try again.\n", RED);
-                valid = false;  //! set valid to false
-                continue;                                                   //! continue to the next iteration
+                cout << getColorCode("Invalid input! Try again.\n", RED);
+                valid = false;
+                cin.clear();                                         //! Clear error flags
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! Discard bad input
             }
-
-            //? Check if the cell is already occupied
-            if (!board.placeSymbol(index, player[turn].getSymbol()))
-            {
-                cout << getColorCode("Cell already occupied! Try again.\n", RED);
-                valid = false;  //! set valid to false
-                continue;                                                   //! continue to the next iteration
-            }
-
-            valid = true;   //! Set valid to true
         } while (!valid);
-        
 
         //? Check for winner
         if (checkWinner())
@@ -441,7 +437,7 @@ void Game::playRound()
             board.display();
 
             //? Display message
-            cout << getColorCode("Game Over! " + player[winner].getName() + " won!\n", YELLOW, true);
+            cout << getColorCode("Game Over! " + player[turn].getName() + " won!\n", YELLOW, true);
 
             //? Increment the winner's wins
             player[turn].incrementWins();
@@ -465,9 +461,7 @@ void Game::playRound()
     }
 
     //? Display result
-    clrscr();           //! Clear the console/terminal screen
-    board.display();    //! Display the board
-    holdScreen();       //! Hold the screen
+    holdScreen(); //! Hold the screen
 }
 
 //* Game class start
