@@ -279,7 +279,7 @@ bool Board::placeSymbol(int index, string symbol)
     int col = (index - 1) % 3;
 
     //? Check if the cell is empty
-    if (this->grid[row][col] == getColorCode("X", BLUE) || this->grid[row][col] == getColorCode("O", RED))
+    if (this->grid[row][col] != getColorCode(string(1, '1' + index - 1), GREEN))
         return false;
 
     //? Place the symbol in the cell
@@ -377,8 +377,12 @@ bool Game::checkWinner()
 //* Game class playRound
 void Game::playRound()
 {
-    //! cell number
+    //? Variables
     int index;
+    bool valid = false;
+
+    //? Reset the board
+    board.reset();  //! Reset the board
 
     //? Start the game
     while (true)
@@ -393,7 +397,7 @@ void Game::playRound()
         cout << getColorCode("\nCurrent Player: ", GREEN, true) << player[turn].getName() << endl;
 
         //? Take input from the user & place symbol
-        while (true)
+        do
         {
             //? Prompt user to enter cell number
             cout << getColorCode("Enter cell number (1-9): ", GREEN);
@@ -402,27 +406,32 @@ void Game::playRound()
             //? Check if the input is valid
             if (cin.fail())
             {
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');      //! ignore the invalid input
-                cout << getColorCode("Invalid input! Try again.\n", RED); //! display error message
-                continue;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');        //! ignore the invalid input
+                cin.clear();                                                //! clear the error flag
+                cout << getColorCode("Invalid input! Try again.\n", RED);   //! display error message
+                valid = false;                                              //! set valid to false
+                continue;                                                   //! continue to the next iteration
             }
 
             //? Check if the cell is valid
             if (index < 1 || index > 9)
             {
                 cout << getColorCode("Invalid cell number! Try again.\n", RED);
-                continue;
+                valid = false;  //! set valid to false
+                continue;                                                   //! continue to the next iteration
             }
 
             //? Check if the cell is already occupied
             if (!board.placeSymbol(index, player[turn].getSymbol()))
             {
                 cout << getColorCode("Cell already occupied! Try again.\n", RED);
-                continue;
+                valid = false;  //! set valid to false
+                continue;                                                   //! continue to the next iteration
             }
 
-            break;      //! break the loop if the input is valid
-        }
+            valid = true;   //! Set valid to true
+        } while (!valid);
+        
 
         //? Check for winner
         if (checkWinner())
@@ -454,6 +463,11 @@ void Game::playRound()
         //? Update the turn
         updateTurn();
     }
+
+    //? Display result
+    clrscr();           //! Clear the console/terminal screen
+    board.display();    //! Display the board
+    holdScreen();       //! Hold the screen
 }
 
 //* Game class start
