@@ -50,9 +50,9 @@ class Board
 {
 private:
     //* 3x3 grid & line separator
-    string grid[3][3],      //! The grid is a 2D array of strings to represent the board
-    line_separator = getColorCode("---+---+---", YELLOW, true),     //! Line separator
-    pipe = getColorCode("|", YELLOW, true);                         //! Pipe separator
+    string grid[3][3],                                              //! The grid is a 2D array of strings to represent the board
+        line_separator = getColorCode("---+---+---", YELLOW, true), //! Line separator
+        pipe = getColorCode("|", YELLOW, true);                     //! Pipe separator
 
 public:
     //* Constructor
@@ -103,14 +103,11 @@ public:
 int main()
 {
     //* Create game object
-    // Game game;
+    Game game;
 
     //* Start the game
-    // game.start();
+    game.start();
 
-    Board board;
-    board.display();
-    
     return 0;
 }
 
@@ -127,12 +124,12 @@ string getColorCode(string text, string color, bool bold)
 //* function to clear the console/terminal screen
 void clrscr()
 {
-    //? Clear the console/terminal screen
-    #ifdef _WIN32
-        system("cls");      //! For Windows
-    #else
-        system("clear");    //! For Linux and MacOS
-    #endif
+//? Clear the console/terminal screen
+#ifdef _WIN32
+    system("cls"); //! For Windows
+#else
+    system("clear"); //! For Linux and MacOS
+#endif
 }
 
 //* Player class constructor
@@ -159,7 +156,7 @@ void Player::showInfo()
 {
     //? Display player name
     cout << getColorCode("Name:\t", GREEN, true) << getColorCode(this->name, BLUE) << endl;
-    
+
     //? Display player wins
     cout << getColorCode("Wins:\t", GREEN, true) << getColorCode(to_string(this->wins), YELLOW) << endl;
 }
@@ -167,7 +164,7 @@ void Player::showInfo()
 //* Board class constructor
 Board::Board()
 {
-    this->reset();      //! Reset the board to empty strings
+    this->reset(); //! Reset the board to empty strings
 }
 
 //* Board class getters
@@ -202,7 +199,7 @@ void Board::display()
         {
             //? Display the cell
             cout << ' ' << this->grid[i][j] << ' ';
-            
+
             //? Display the pipe separator
             if (j != 2)
                 cout << this->pipe;
@@ -220,7 +217,7 @@ void Board::display()
 bool Board::isFull()
 {
     char number = '1';
-    
+
     //? Check if the board is full
     for (int i = 0; i < 3; i++)
     {
@@ -229,7 +226,7 @@ bool Board::isFull()
             //? Check if the cell is empty
             if (this->grid[i][j] == getColorCode(string(1, number), GREEN))
                 return false;
-            
+
             //? Increment the number
             number++;
         }
@@ -238,3 +235,37 @@ bool Board::isFull()
     return true;
 }
 
+//* Game class constructor
+Game::Game()
+{
+    this->turn = 0;             //! Initialize turn to 0
+    this->game_over = false;    //! Initialize game_over to false
+    this->winner = 0;           //! Initialize winner to false
+
+    //? Create players
+    string name1, name2, symbol1, symbol2;
+
+    //? Get player 1 name and symbol
+    cout << getColorCode("Enter Player 1 Name: ", GREEN, true);
+    getline(cin, name1);
+    symbol1 = getColorCode("X", BLUE);
+
+    //? Get player 2 name and symbol
+    cout << getColorCode("Enter Player 2 Name: ", GREEN, true);
+    getline(cin, name2);
+    symbol2 = getColorCode("O", RED);
+
+    //? Create player objects
+    this->player = new Player[2]{
+        Player(name1, symbol1),
+        Player(name2, symbol2)};
+    
+    //? Clear the console/terminal screen
+    clrscr();
+}
+
+//* Game class start
+void Game::start()
+{
+    
+}
