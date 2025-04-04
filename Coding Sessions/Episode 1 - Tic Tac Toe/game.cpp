@@ -23,6 +23,9 @@ string getColorCode(string text, string color, bool bold = false);
 //* function to clear the console/terminal screen
 void clrscr();
 
+//* function to hold the screen
+void holdScreen();
+
 /////////////////////
 // Player class
 /////////////////////
@@ -100,6 +103,9 @@ private:
     //* List players
     void listPlayers();
 
+    //* Play a round
+    void playRound();
+
 public:
     //* Constructor
     Game();
@@ -141,6 +147,14 @@ void clrscr()
 #else
     system("clear"); //! For Linux and MacOS
 #endif
+}
+
+//* function to hold the screen
+void holdScreen()
+{
+    cout << getColorCode("Press Enter to continue...", YELLOW, true);
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');    //! ignore the invalid input
+    cin.get();                                              //! wait for user to press enter
 }
 
 //* Player class constructor
@@ -319,10 +333,8 @@ void Game::listPlayers()
     player[1].showInfo();
     cout << endl;
 
-    //? Prompt user to continue
-    cout << getColorCode("Press any key to continue...", GREEN, true);
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! Wait for user input
-    cin.get();                                           //! Wait for user input
+    //? Prompt user to continue / hold the screen
+    holdScreen();
 }
 
 //* Game class checkWinner
@@ -362,6 +374,88 @@ bool Game::checkWinner()
     return false;
 }
 
+//* Game class playRound
+void Game::playRound()
+{
+    //! cell number
+    int index;
+
+    //? Start the game
+    while (true)
+    {
+        //? Clear the console/terminal screen
+        clrscr();
+
+        //? Display the board
+        board.display();
+
+        //? Display the current player
+        cout << getColorCode("\nCurrent Player: ", GREEN, true) << player[turn].getName() << endl;
+
+        //? Take input from the user & place symbol
+        while (true)
+        {
+            //? Prompt user to enter cell number
+            cout << getColorCode("Enter cell number (1-9): ", GREEN);
+            cin >> index;
+
+            //? Check if the input is valid
+            if (cin.fail())
+            {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');      //! ignore the invalid input
+                cout << getColorCode("Invalid input! Try again.\n", RED); //! display error message
+                continue;
+            }
+
+            //? Check if the cell is valid
+            if (index < 1 || index > 9)
+            {
+                cout << getColorCode("Invalid cell number! Try again.\n", RED);
+                continue;
+            }
+
+            //? Check if the cell is already occupied
+            if (!board.placeSymbol(index, player[turn].getSymbol()))
+            {
+                cout << getColorCode("Cell already occupied! Try again.\n", RED);
+                continue;
+            }
+
+            break;      //! break the loop if the input is valid
+        }
+
+        //? Check for winner
+        if (checkWinner())
+        {
+            //? Display the board
+            clrscr();
+            board.display();
+
+            //? Display message
+            cout << getColorCode("Game Over! " + player[winner].getName() + " won!\n", YELLOW, true);
+
+            //? Increment the winner's wins
+            player[turn].incrementWins();
+            break;
+        }
+
+        //? Check if game is draw
+        if (board.isFull())
+        {
+            //? Display the board
+            clrscr();
+            board.display();
+
+            //? Display message
+            cout << getColorCode("Game Over! It's a draw.\n", YELLOW, true);
+            break;
+        }
+
+        //? Update the turn
+        updateTurn();
+    }
+}
+
 //* Game class start
 void Game::start()
 {
@@ -384,88 +478,16 @@ void Game::start()
         switch (choice)
         {
         case 1:
-            //! cell number
-            int index;
-
-            //? Start the game
-            while (true)
-            {
-                //? Clear the console/terminal screen
-                clrscr();
-
-                //? Display the board
-                board.display();
-
-                //? Display the current player
-                cout << getColorCode("\nCurrent Player: ", GREEN, true) << player[turn].getName() << endl;
-
-                //? Take input from the user & place symbol
-                while (true)
-                {
-                    //? Prompt user to enter cell number
-                    cout << getColorCode("Enter cell number (1-9): ", GREEN);
-                    cin >> index;
-
-                    //? Check if the input is valid
-                    if (cin.fail())
-                    {
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');      //! ignore the invalid input
-                        cout << getColorCode("Invalid input! Try again.\n", RED); //! display error message
-                        continue;
-                    }
-
-                    //? Check if the cell is valid
-                    if (index < 1 || index > 9)
-                    {
-                        cout << getColorCode("Invalid cell number! Try again.\n", RED);
-                        continue;
-                    }
-
-                    //? Check if the cell is already occupied
-                    if (!board.placeSymbol(index, player[turn].getSymbol()))
-                    {
-                        cout << getColorCode("Cell already occupied! Try again.\n", RED);
-                        continue;
-                    }
-                }
-
-                //? Check for winner
-                if (checkWinner())
-                {
-                    //? Display the board
-                    clrscr();
-                    board.display();
-
-                    //? Display message
-                    cout << getColorCode("Game Over! " + player[winner].getName() + " won!\n", YELLOW, true);
-
-                    //? Increment the winner's wins
-                    player[turn].incrementWins();
-                    break;
-                }
-
-                //? Check if game is draw
-                if (board.isFull())
-                {
-                    //? Display the board
-                    clrscr();
-                    board.display();
-
-                    //? Display message
-                    cout << getColorCode("Game Over! It's a draw.\n", YELLOW, true);
-                    break;
-                }
-
-                //? Update the turn
-                updateTurn();
-            }
-
+            //? Play the game
+            playRound();
             break;
+
         case 2:
             //? Display players info
             clrscr();      //! Clear the console/terminal screen
             listPlayers(); //! List players
             break;
+
         case 3:
             //? Quit the game
             clrscr(); //! Clear the console/terminal screen
