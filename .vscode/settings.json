@@ -1,5 +1,26 @@
 {
     "files.associations": {
         "iostream": "cpp"
-    }
+    },
+
+    "workbench.colorTheme": "JellyFish",
+    "workbench.iconTheme": "vscode-icons",
+    "files.autoSave": "afterDelay",
+    "editor.cursorBlinking": "expand",
+    "editor.mouseWheelZoom": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    "haskell.manageHLS": "GHCup",
+    "workbench.startupEditor": "none",
+    "explorer.confirmDelete": false,
+    "editor.wordWrap": "on",
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingComments": "never",
+    "editor.autoClosingDelete": "never",
+    "editor.autoClosingOvertype": "never",
+    "editor.autoClosingQuotes": "never",
+    "editor.autoIndent": "none",
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4,
 }

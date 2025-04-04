@@ -15,10 +15,7 @@ using namespace std;
 // Functions
 /////////////////////
 //* function to get color code with given text
-string getColorCode(string text, string color, bool bold = false)
-{
-    return (bold) ? color + BOLD + text + RESET : color + text + RESET;
-}
+string getColorCode(string text, string color, bool bold = false);
 
 /////////////////////
 // Player class
@@ -31,18 +28,14 @@ private:
 
 public:
     //* Constructor
-    Player(string name, string symbol) : name{name}, symbol(symbol), wins(0) {}
+    Player(string name, string symbol);
 
     //* Getters
-    string getName() { return name; }
-    int getWins() { return wins; }
+    string getName();
+    int getWins();
 
     //* Display Info
-    void showInfo()
-    {
-        cout << "Name:\t" << name << endl
-             << "Wins:\t" << wins << endl;
-    }
+    void showInfo();
 };
 
 ////////////////////
@@ -55,45 +48,17 @@ private:
 
 public:
     //* Constructor
-    Board() { reset(); }
+    Board();
 
     //* Board clear/reset
-    void reset()
-    {
-        char count = '1';
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                string cell = " ";
-                cell[0] = count++;
-                grid[i][j] = cell;
-            }
-        }
-    }
+    void reset();
 
     //* Display Board
-    void display()
-    {
-        //* Rows
-        for (int i = 0; i < 3; i++)
-        {
-            //* Columns
-            for (int j = 0; j < 3; j++)
-            {
-                cout << " " + grid[i][j] + " ";
-                if (j < 2)
-                    cout << pipe;
-            }
-            cout << endl
-                 << line_separator << endl;
-        }
-    }
+    void display();
 };
 
 int main()
 {
-    Board b;
-    b.display();
+    
     return 0;
 }
