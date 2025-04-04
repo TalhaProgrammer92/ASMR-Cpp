@@ -15,8 +15,12 @@ using namespace std;
 /////////////////////
 // Functions
 /////////////////////
+
 //* function to get color code with given text
 string getColorCode(string text, string color, bool bold = false);
+
+//* function to clear the console/terminal screen
+void clrscr();
 
 /////////////////////
 // Player class
@@ -120,6 +124,17 @@ string getColorCode(string text, string color, bool bold)
     return (bold) ? BOLD + color + text + RESET : color + text + RESET;
 }
 
+//* function to clear the console/terminal screen
+void clrscr()
+{
+    //? Clear the console/terminal screen
+    #ifdef _WIN32
+        system("cls");      //! For Windows
+    #else
+        system("clear");    //! For Linux and MacOS
+    #endif
+}
+
 //* Player class constructor
 Player::Player(string name, string symbol)
 {
@@ -200,3 +215,26 @@ void Board::display()
             cout << this->line_separator << endl;
     }
 }
+
+//* Board class isFull
+bool Board::isFull()
+{
+    char number = '1';
+    
+    //? Check if the board is full
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            //? Check if the cell is empty
+            if (this->grid[i][j] == getColorCode(string(1, number), GREEN))
+                return false;
+            
+            //? Increment the number
+            number++;
+        }
+    }
+
+    return true;
+}
+
