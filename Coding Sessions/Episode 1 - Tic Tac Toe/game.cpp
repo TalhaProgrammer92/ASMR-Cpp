@@ -398,6 +398,9 @@ bool Board::placeSymbol(int index, Symbol symbol)
 //* Game class constructor
 Game::Game()
 {
+    //? Clear the console/terminal screen
+    clrscr();
+
     //? Initialize game variables
     //! Initialize turn to 0
     this->turn = 0;
