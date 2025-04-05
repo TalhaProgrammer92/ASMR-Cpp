@@ -198,7 +198,7 @@ void clrscr()
 //* function to hold the screen
 void holdScreen()
 {
-    cout << getColorCode("Press Enter to continue...", YELLOW, true);
+    cout << getColorCode("\nPress Enter to continue...", YELLOW, true);
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! ignore the invalid input
     cin.get();                                           //! wait for user to press enter
 }
@@ -368,7 +368,7 @@ bool Board::isFull()
     {
         for (int j = 0; j < 3; j++)
         {
-            Symbol symbol(number++, GREEN);
+            Symbol symbol(number, GREEN);
             //? Check if the cell is empty
             if (this->grid[i][j] == symbol)
                 return false;
@@ -587,7 +587,7 @@ void Game::playRound()
             board.display();
 
             //? Display message
-            cout << getColorCode("Game Over! " + player[turn].getName() + " won!\n", CYAN, true);
+            cout << getColorCode("\nGame Over! " + player[turn].getName() + " won!\n", CYAN, true);
 
             //? Increment the winner's wins
             player[turn].incrementWins();
@@ -602,7 +602,7 @@ void Game::playRound()
             board.display();
 
             //? Display message
-            cout << getColorCode("Game Over! It's a draw.\n", CYAN, true);
+            cout << getColorCode("\nGame Over! It's a draw.\n", CYAN, true);
             break;
         }
 
