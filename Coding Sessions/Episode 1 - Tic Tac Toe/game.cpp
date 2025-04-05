@@ -31,7 +31,8 @@ void holdScreen();
 /////////////////////
 // Symbol class
 /////////////////////
-class Symbol{
+class Symbol
+{
 private:
     //* Attributes
     char symbol;
@@ -39,7 +40,8 @@ private:
     bool bold;
 
 public:
-    //* Constructor
+    //* Constructors
+    Symbol() {}; //! Default constructor
     Symbol(char symbol, string code);
 
     //* Getters
@@ -51,6 +53,12 @@ public:
 
     //* Display symbol (overload <<)
     friend ostream &operator<<(ostream &os, const Symbol &symbol);
+
+    //* Overload == operator
+    bool operator==(const Symbol &other) const;
+
+    //* Overload != operator
+    bool operator!=(const Symbol &other) const;
 };
 
 /////////////////////
@@ -60,16 +68,17 @@ class Player
 {
 private:
     //* Attributes
-    string name, symbol;
+    string name;
+    Symbol symbol;
     int wins;
 
 public:
     //* Constructor
-    Player(string name, string symbol);
+    Player(string name, Symbol symbol);
 
     //* Getters
     string getName();
-    string getSymbol();
+    Symbol getSymbol();
     int getWins();
 
     //* Increment wins
@@ -85,17 +94,23 @@ public:
 class Board
 {
 private:
-    //* 3x3 grid & line separator
-    string grid[3][3],                                              //! The grid is a 2D array of strings to represent the board
-        line_separator = getColorCode("---+---+---", YELLOW, true), //! Line separator
-        pipe = getColorCode("|", YELLOW, true);                     //! Pipe separator
+    //* 3x3 Grid
+    //! The grid is a 2D array of strings to represent the board
+    Symbol grid[3][3];
+
+    //* Separators
+    string line_separator = getColorCode("---+---+---", YELLOW, true), //! Line separator
+        pipe = getColorCode("|", YELLOW, true);                        //! Pipe separator
 
 public:
     //* Constructor
     Board();
 
     //* Getters
-    string getCell(int row, int col);
+    Symbol getCell(int row, int col);
+
+    //* Make symbol bold
+    void makeSymbolBold(int row, int col);
 
     //* Board clear/reset
     void reset();
@@ -107,7 +122,7 @@ public:
     bool isFull();
 
     //* Place symbol in the board
-    bool placeSymbol(int index, string symbol);
+    bool placeSymbol(int index, Symbol symbol);
 };
 
 ////////////////////
@@ -219,11 +234,29 @@ ostream &operator<<(ostream &os, const Symbol &symbol)
     return os;
 }
 
-//* Player class constructor
-Player::Player(string name, string symbol)
+//* Symbol class overload == operator
+bool Symbol::operator==(const Symbol &other) const
 {
+    //? Check if the symbols are equal
+    return this->symbol == other.symbol;
+}
+
+//* Symbol class overload != operator
+bool Symbol::operator!=(const Symbol &other) const
+{
+    //? Check if the symbols are not equal
+    return this->symbol != other.symbol;
+}
+
+//* Player class constructor
+Player::Player(string name, Symbol symbol)
+{
+    //? Initialize player name and symbol
     this->name = name;
+    //! Create a new symbol object
     this->symbol = symbol;
+
+    //? Initialize player wins
     this->wins = 0;
 }
 
@@ -233,7 +266,7 @@ string Player::getName()
     return this->name;
 }
 
-string Player::getSymbol()
+Symbol Player::getSymbol()
 {
     return this->symbol;
 }
@@ -253,10 +286,13 @@ void Player::incrementWins()
 void Player::showInfo()
 {
     //? Display player name
-    cout << getColorCode("Name:\t", GREEN, true) << getColorCode(this->name, BLUE) << endl;
+    cout << getColorCode("Name:\t", MAGENTA, true) << getColorCode(this->name, CYAN) << endl;
+
+    //? Display player symbol
+    cout << getColorCode("Symbol:\t", MAGENTA, true) << getColorCode(string(1, this->symbol.getSymbol()), CYAN) << endl;
 
     //? Display player wins
-    cout << getColorCode("Wins:\t", GREEN, true) << getColorCode(to_string(this->wins), YELLOW) << endl;
+    cout << getColorCode("Wins:\t", MAGENTA, true) << getColorCode(to_string(this->wins), CYAN) << endl;
 }
 
 //* Board class constructor
@@ -266,9 +302,16 @@ Board::Board()
 }
 
 //* Board class getters
-string Board::getCell(int row, int col)
+Symbol Board::getCell(int row, int col)
 {
     return this->grid[row][col];
+}
+
+//* Board class makeSymbolBold
+void Board::makeSymbolBold(int row, int col)
+{
+    //? Make the symbol bold
+    this->grid[row][col].makeBold();
 }
 
 //* Board class reset
@@ -281,8 +324,9 @@ void Board::reset()
     {
         for (int j = 0; j < 3; j++)
         {
-            this->grid[i][j] = getColorCode(string(1, number), GREEN);
-            number++;
+            //? Set the cell to the number with color code
+            Symbol symbol(number++, GREEN);
+            this->grid[i][j] = symbol;
         }
     }
 }
@@ -321,8 +365,9 @@ bool Board::isFull()
     {
         for (int j = 0; j < 3; j++)
         {
+            Symbol symbol(number++, GREEN);
             //? Check if the cell is empty
-            if (this->grid[i][j] == getColorCode(string(1, number), GREEN))
+            if (this->grid[i][j] == symbol)
                 return false;
 
             //? Increment the number
@@ -334,14 +379,14 @@ bool Board::isFull()
 }
 
 //* Board class placeSymbol
-bool Board::placeSymbol(int index, string symbol)
+bool Board::placeSymbol(int index, Symbol symbol)
 {
     //? Convert index to row and column
     int row = (index - 1) / 3;
     int col = (index - 1) % 3;
 
     //? Check if the cell is empty
-    if (this->grid[row][col] != getColorCode(string(1, '1' + index - 1), GREEN))
+    if (this->grid[row][col] != Symbol('1' + index - 1, GREEN))
         return false;
 
     //? Place the symbol in the cell
@@ -353,21 +398,25 @@ bool Board::placeSymbol(int index, string symbol)
 //* Game class constructor
 Game::Game()
 {
-    this->turn = 0;          //! Initialize turn to 0
-    this->game_over = false; //! Initialize game_over to false
+    //? Initialize game variables
+    //! Initialize turn to 0
+    this->turn = 0;
+    //! Initialize game_over to false
+    this->game_over = false;
 
     //? Create players
-    string name1, name2, symbol1, symbol2;
+    string name1, name2;
+    Symbol symbol1, symbol2;
 
     //? Get player 1 name and symbol
-    cout << getColorCode("Enter Player 1 Name: ", GREEN, true);
+    cout << getColorCode("Enter Player 1 (X) Name: ", MAGENTA, true);
     getline(cin, name1);
-    symbol1 = getColorCode("X", BLUE);
+    symbol1 = Symbol('X', BLUE);
 
     //? Get player 2 name and symbol
-    cout << getColorCode("Enter Player 2 Name: ", GREEN, true);
+    cout << getColorCode("Enter Player 2 (O) Name: ", MAGENTA, true);
     getline(cin, name2);
-    symbol2 = getColorCode("O", RED);
+    symbol2 = Symbol('O', BLUE);
 
     //? Create player objects
     this->player = new Player[2]{
@@ -402,24 +451,37 @@ void Game::listPlayers()
 bool Game::checkWinner()
 {
     //? Check for winner
-    string symbol = player[turn].getSymbol();
+    Symbol symbol = player[turn].getSymbol();
 
     //? Check rows & columns
     for (int i = 0; i < 3; i++)
         //? Check rows
         if (board.getCell(i, 0) == symbol && board.getCell(i, 1) == symbol && board.getCell(i, 2) == symbol)
+        {
+            //! Make the symbols bold
+            board.makeSymbolBold(i, 0);
+            board.makeSymbolBold(i, 1);
+            board.makeSymbolBold(i, 2);
+            
             return true;
+        }
 
         //? Check columns
         else if (board.getCell(0, i) == symbol && board.getCell(1, i) == symbol && board.getCell(2, i) == symbol)
+        {
             return true;
+        }
 
     //? Check diagonals
     if (board.getCell(0, 0) == symbol && board.getCell(1, 1) == symbol && board.getCell(2, 2) == symbol)
+    {
         return true;
+    }
 
     if (board.getCell(0, 2) == symbol && board.getCell(1, 1) == symbol && board.getCell(2, 0) == symbol)
+    {
         return true;
+    }
 
     return false;
 }
