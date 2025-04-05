@@ -41,7 +41,9 @@ private:
 
 public:
     //* Constructors
-    Symbol() {}; //! Default constructor
+    //! Default constructor
+    Symbol() {};
+    //! Constructor with parameters
     Symbol(char symbol, string code);
 
     //* Getters
@@ -189,9 +191,11 @@ void clrscr()
 {
 //? Clear the console/terminal screen
 #ifdef _WIN32
-    system("cls"); //! For Windows
+    //! For Windows
+    system("cls");
 #else
-    system("clear"); //! For Linux and MacOS
+    //! For Linux and MacOS
+    system("clear");
 #endif
 }
 
@@ -199,8 +203,10 @@ void clrscr()
 void holdScreen()
 {
     cout << getColorCode("\nPress Enter to continue...", YELLOW, true);
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! ignore the invalid input
-    cin.get();                                           //! wait for user to press enter
+    //! ignore the invalid input
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    //! wait for user to press enter
+    cin.get();
 }
 
 //* Symbol class constructor
@@ -225,8 +231,9 @@ string Symbol::getColor()
 //* Symbol class makeBold
 void Symbol::makeBold()
 {
+    //? Make the symbol bold
     this->bold = true;
-    this->code = BOLD + this->code; //! Make the symbol bold
+    this->code = BOLD + this->code;
 }
 
 //* Symbol class overload << operator
@@ -256,7 +263,7 @@ Player::Player(string name, Symbol symbol)
 {
     //? Initialize player name and symbol
     this->name = name;
-    //! Create a new symbol object
+    //! Assign the symbol object
     this->symbol = symbol;
 
     //? Initialize player wins
@@ -301,7 +308,8 @@ void Player::showInfo()
 //* Board class constructor
 Board::Board()
 {
-    this->reset(); //! Reset the board to empty strings
+    //! Reset the board to empty strings
+    this->reset();
 }
 
 //* Board class getters
@@ -443,16 +451,19 @@ void Game::setPlayers()
 //* Game class updateTurn
 void Game::updateTurn()
 {
-    turn ^= 1; //! Toggle the turn between 0 and 1
+    //! Toggle the turn between 0 and 1
+    turn ^= 1;
 }
 
 //* Game class listPlayers
 void Game::listPlayers()
 {
     //? Display players info
+    //! Player 1
     player[0].showInfo();
     cout << endl;
 
+    //! Player 2
     player[1].showInfo();
     cout << endl;
 
@@ -520,7 +531,7 @@ void Game::playRound()
     bool valid = false;
 
     //? Reset the board
-    board.reset(); //! Reset the board
+    board.reset();
 
     //? Start the game
     while (true)
@@ -546,8 +557,10 @@ void Game::playRound()
                 //? Check if input failed (e.g., non-integer input)
                 if (cin.fail())
                 {
-                    cin.clear();                                         //! Clear error flags
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! Discard bad input
+                    //! Clear error flags
+                    cin.clear();
+                    //! Discard bad input
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     throw runtime_error("Invalid input");
                 }
 
@@ -574,8 +587,10 @@ void Game::playRound()
             {
                 cout << getColorCode("Invalid input! Try again.\n", RED);
                 valid = false;
-                cin.clear();                                         //! Clear error flags
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! Discard bad input
+                //! Clear error flags
+                cin.clear();
+                //! Discard bad input
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
         } while (!valid);
 
@@ -610,14 +625,15 @@ void Game::playRound()
         updateTurn();
     }
 
-    //? Display result
-    holdScreen(); //! Hold the screen
+    //? Hold the screen
+    holdScreen();
 }
 
 //* Game class start
 void Game::start()
 {
-    int choice; //! User choice
+    //? User choice variable declaration
+    int choice;
 
     //? Game loop
     while (!game_over)
@@ -642,15 +658,19 @@ void Game::start()
 
         case 2:
             //? Display players info
-            clrscr();      //! Clear the console/terminal screen
-            listPlayers(); //! List players
+            //! Clear the console/terminal screen
+            clrscr();
+            //! List players
+            listPlayers();
             break;
 
         case 3:
             //? Quit the game
-            clrscr(); //! Clear the console/terminal screen
+            //! Clear the console/terminal screen
+            clrscr();
             cout << getColorCode("Thanks for playing!\n", MAGENTA, true);
-            game_over = true; //! Set game_over to true
+            //! Set game_over to true
+            game_over = true;
             break;
 
         default:
