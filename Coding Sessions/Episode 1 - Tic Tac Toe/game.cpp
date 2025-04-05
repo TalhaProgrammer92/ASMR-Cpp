@@ -10,6 +10,8 @@ using namespace std;
 #define BLUE "\033[94m"
 #define YELLOW "\033[93m"
 #define GREEN "\033[92m"
+#define MAGENTA "\033[95m"
+#define CYAN "\033[96m"
 #define BOLD "\033[1m"
 #define RESET "\033[0m"
 
@@ -27,11 +29,37 @@ void clrscr();
 void holdScreen();
 
 /////////////////////
+// Symbol class
+/////////////////////
+class Symbol{
+private:
+    //* Attributes
+    char symbol;
+    string code;
+    bool bold;
+
+public:
+    //* Constructor
+    Symbol(char symbol, string code);
+
+    //* Getters
+    char getSymbol();
+    string getColor();
+
+    //* Property
+    void makeBold();
+
+    //* Display symbol (overload <<)
+    friend ostream &operator<<(ostream &os, const Symbol &symbol);
+};
+
+/////////////////////
 // Player class
 /////////////////////
 class Player
 {
 private:
+    //* Attributes
     string name, symbol;
     int wins;
 
@@ -155,6 +183,40 @@ void holdScreen()
     cout << getColorCode("Press Enter to continue...", YELLOW, true);
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); //! ignore the invalid input
     cin.get();                                           //! wait for user to press enter
+}
+
+//* Symbol class constructor
+Symbol::Symbol(char symbol, string code)
+{
+    this->symbol = symbol;
+    this->code = code;
+    this->bold = false;
+}
+
+//* Symbol class getters
+char Symbol::getSymbol()
+{
+    return this->symbol;
+}
+
+string Symbol::getColor()
+{
+    return this->code;
+}
+
+//* Symbol class makeBold
+void Symbol::makeBold()
+{
+    this->bold = true;
+    this->code = BOLD + this->code; //! Make the symbol bold
+}
+
+//* Symbol class overload << operator
+ostream &operator<<(ostream &os, const Symbol &symbol)
+{
+    //? Display the symbol with color code
+    os << symbol.code << symbol.symbol << RESET;
+    return os;
 }
 
 //* Player class constructor
