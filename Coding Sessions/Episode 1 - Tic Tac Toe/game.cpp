@@ -137,6 +137,9 @@ private:
     int turn;       //! Current turn
     bool game_over; //! Status flags
 
+    //* Set Players
+    void setPlayers();
+
     //* Check for winner
     bool checkWinner();
 
@@ -407,6 +410,16 @@ Game::Game()
     //! Initialize game_over to false
     this->game_over = false;
 
+    //? Set players
+    setPlayers();
+
+    //? Clear the console/terminal screen
+    clrscr();
+}
+
+//* Game class setPlayers
+void Game::setPlayers()
+{
     //? Create players
     string name1, name2;
     Symbol symbol1, symbol2;
@@ -419,15 +432,12 @@ Game::Game()
     //? Get player 2 name and symbol
     cout << getColorCode("Enter Player 2 (O) Name: ", MAGENTA, true);
     getline(cin, name2);
-    symbol2 = Symbol('O', BLUE);
+    symbol2 = Symbol('O', RED);
 
     //? Create player objects
     this->player = new Player[2]{
         Player(name1, symbol1),
         Player(name2, symbol2)};
-
-    //? Clear the console/terminal screen
-    clrscr();
 }
 
 //* Game class updateTurn
