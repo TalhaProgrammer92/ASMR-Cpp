@@ -455,31 +455,44 @@ bool Game::checkWinner()
 
     //? Check rows & columns
     for (int i = 0; i < 3; i++)
+    {
         //? Check rows
         if (board.getCell(i, 0) == symbol && board.getCell(i, 1) == symbol && board.getCell(i, 2) == symbol)
         {
             //! Make the symbols bold
-            board.makeSymbolBold(i, 0);
-            board.makeSymbolBold(i, 1);
-            board.makeSymbolBold(i, 2);
-            
+            for (int j = 0; j < 3; j++)
+                board.makeSymbolBold(i, j);
+
             return true;
         }
 
         //? Check columns
         else if (board.getCell(0, i) == symbol && board.getCell(1, i) == symbol && board.getCell(2, i) == symbol)
         {
+            //! Make the symbols bold
+            for (int j = 0; j < 3; j++)
+                board.makeSymbolBold(j, i);
+
             return true;
         }
+    }
 
     //? Check diagonals
     if (board.getCell(0, 0) == symbol && board.getCell(1, 1) == symbol && board.getCell(2, 2) == symbol)
     {
+        //! Make the symbols bold
+        for (int j = 0; j < 3; j++)
+            board.makeSymbolBold(j, j);
+
         return true;
     }
 
     if (board.getCell(0, 2) == symbol && board.getCell(1, 1) == symbol && board.getCell(2, 0) == symbol)
     {
+        //! Make the symbols bold
+        for (int j = 0; j < 3; j++)
+            board.makeSymbolBold(j, 2 - j);
+
         return true;
     }
 
@@ -506,7 +519,7 @@ void Game::playRound()
         board.display();
 
         //? Display the current player
-        cout << getColorCode("\nCurrent Player: ", GREEN, true) << player[turn].getName() << endl;
+        cout << getColorCode("\nCurrent Player: ", MAGENTA, true) << getColorCode(player[turn].getName(), CYAN, true) << endl;
 
         //? Take input from the user & place symbol
         do
@@ -514,7 +527,7 @@ void Game::playRound()
             try
             {
                 //? Prompt user to enter cell number
-                cout << getColorCode("\nEnter cell number (1-9): ", GREEN);
+                cout << getColorCode("\nEnter cell number (1-9): ", MAGENTA);
                 cin >> index;
 
                 //? Check if input failed (e.g., non-integer input)
@@ -561,7 +574,7 @@ void Game::playRound()
             board.display();
 
             //? Display message
-            cout << getColorCode("Game Over! " + player[turn].getName() + " won!\n", YELLOW, true);
+            cout << getColorCode("Game Over! " + player[turn].getName() + " won!\n", CYAN, true);
 
             //? Increment the winner's wins
             player[turn].incrementWins();
@@ -576,7 +589,7 @@ void Game::playRound()
             board.display();
 
             //? Display message
-            cout << getColorCode("Game Over! It's a draw.\n", YELLOW, true);
+            cout << getColorCode("Game Over! It's a draw.\n", CYAN, true);
             break;
         }
 
@@ -600,10 +613,10 @@ void Game::start()
         clrscr();
 
         //? Display welcome message
-        cout << getColorCode("Welcome to Tic Tac Toe!\n\n", GREEN, true);
+        cout << getColorCode("Welcome to Tic Tac Toe!\n\n", MAGENTA, true);
 
         //? Prompt user to play the game
-        cout << getColorCode("1: Play Game, 2: View players info, 3: Quit? ", YELLOW, true);
+        cout << getColorCode("1: Play Game, 2: View players info, 3: Quit? ", CYAN);
         cin >> choice;
 
         //? Decide what to do based on user choice
@@ -623,7 +636,7 @@ void Game::start()
         case 3:
             //? Quit the game
             clrscr(); //! Clear the console/terminal screen
-            cout << getColorCode("Thanks for playing!\n", GREEN, true);
+            cout << getColorCode("Thanks for playing!\n", MAGENTA, true);
             game_over = true; //! Set game_over to true
             break;
 
