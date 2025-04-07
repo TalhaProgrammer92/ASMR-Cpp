@@ -63,8 +63,42 @@ public:
     bool operator!=(const Symbol &other) const;
 };
 
+/////////////////////
+// Board class
+/////////////////////
+class Board
+{
+private:
+    //* Attributes
+    Symbol *board;
+    int size;
+    int moves;
+
+public:
+    //* Constructor
+    Board(int size);
+
+    //* Clear board
+    void clear();
+
+    //* display board
+    void display();
+
+    //* Get a symbol/cell
+    Symbol get(int index);
+
+    //* Insert a symbol/cell
+    void insert(Symbol symbol, int index);
+};
+
+/////////////////////
+// Entry Point
+/////////////////////
 int main()
 {
+    Board board(7);
+    board.display();
+
     return 0;
 }
 
@@ -148,4 +182,52 @@ bool Symbol::operator!=(const Symbol &other) const
 {
     //? Check if the symbols are not equal
     return this->symbol != other.symbol;
+}
+
+/////////////////////
+// Board class
+/////////////////////
+
+//* Constructor
+Board::Board(int size /* Limit: 3 to 9 */)
+{
+    this->size = size;
+
+    //! Clear board
+    clear();
+}
+
+//* Clear the board
+void Board::clear()
+{
+    //! Declare an array to pointer
+    board = new Symbol[size * size];
+
+    //! Iteration to set '-' symbols to all cells
+    for (int i = 0; i < size * size; i++)
+        board[i] = Symbol('-', CYAN);
+}
+
+//* Display the board
+void Board::display()
+{
+    //! Number strip (columns)
+    cout << "  ";
+    for (int i = 1; i <= size; i++)
+        cout << ' ' << getColorCode(to_string(i), YELLOW, true) << ' ';
+
+    //! Board
+    int n = 1;
+    for (int i = 0; i < size * size; i++)
+    {
+        //! New line & Number strip (rows)
+        if (i % size == 0)
+        {
+            cout << endl;
+            cout << getColorCode(to_string(n++), YELLOW, true) << ' ';
+        }
+
+        //! Cell
+        cout << ' ' << board[i] << ' ';
+    }
 }
