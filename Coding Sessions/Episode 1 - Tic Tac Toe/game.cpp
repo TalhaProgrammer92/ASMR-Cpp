@@ -1,5 +1,5 @@
 #include <iostream>
-#include <limits>
+#include <conio.h>
 
 using namespace std;
 
@@ -527,7 +527,7 @@ bool Game::checkWinner()
 void Game::playRound()
 {
     //? Variables
-    int index;
+    char index;
     bool valid = false;
 
     //? Reset the board
@@ -548,51 +548,27 @@ void Game::playRound()
         //? Take input from the user & place symbol
         do
         {
-            try
+            //? Prompt user to enter cell number
+            cout << getColorCode("\nEnter cell number (1-9): ", MAGENTA);
+            index = getche();
+
+            //? Check if the cell is valid
+            if (index >= '1' && index <= '9')
             {
-                //? Prompt user to enter cell number
-                cout << getColorCode("\nEnter cell number (1-9): ", MAGENTA);
-                cin >> index;
-
-                //? Check if input failed (e.g., non-integer input)
-                if (cin.fail())
-                {
-                    //! Clear error flags
-                    cin.clear();
-                    //! Discard bad input
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    throw runtime_error("Invalid input");
-                }
-
-                //? Check if the cell is valid
-                if (index < 1 || index > 9)
-                {
-                    cout << getColorCode("Invalid cell number! Try again.\n", RED);
-                    valid = false;
-                    continue;
-                }
-
                 //? Check if the cell is already occupied
-                if (!board.placeSymbol(index, player[turn].getSymbol()))
+                if (!board.placeSymbol(index - '0', player[turn].getSymbol()))
                 {
-                    cout << getColorCode("Cell already occupied! Try again.\n", RED);
-                    valid = false;
+                    cout << getColorCode("\nCell already occupied! Try again.\n", RED);
                     continue;
                 }
+                break;
+            }
 
-                valid = true;
-            }
-            //? Catch invalid input exceptions
-            catch (const exception &e)
-            {
-                cout << getColorCode("Invalid input! Try again.\n", RED);
-                valid = false;
-                //! Clear error flags
-                cin.clear();
-                //! Discard bad input
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            }
-        } while (!valid);
+            //? Check if input failed (e.g., non-integer input)
+            else
+                cout << getColorCode("\nInvalid input! Try again.\n", RED);
+
+        } while (true);
 
         //? Check for winner
         if (checkWinner())
